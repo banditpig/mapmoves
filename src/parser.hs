@@ -37,8 +37,6 @@ data Player = Player { name  :: String,
 type GameId = String
 data Game = Game Title GameId [Player] deriving (Show)
 
-makeUniqueId :: IO (String)
-makeUniqueId = undefined
 
 pathsCross :: Path -> Path -> Path
 pathsCross p1 p2 = [ l1 | l1 <- p1, _ <- p2, p1 == p2]
