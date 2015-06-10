@@ -6,22 +6,6 @@
     -- move
     -- info
     -- quit
-
--- game
---  "a game"
---  player name, email
---  player name, email
---  -- 
-
--- deploy
-
---  unit(name,descr) -> (1,0)
---  unit('name','descr') -> (1,0)
---  unit('name','descr') -> (1,0)
--- move
---  (1,0,name) ->  (2,0)
---  (2,0,name) ->  (2,0)
---  (11,0,name) -> (2,0)
 import Control.Concurrent (threadDelay)
 import Control.Monad 
 import Mail
