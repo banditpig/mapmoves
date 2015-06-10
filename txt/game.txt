@@ -1,0 +1,7 @@
+
+
+game
+   'Title is new one'
+   player mike mike_k_houghton@yahoo.co.uk
+   player joe mike_k_houghton@yahoo.co.uk
+end

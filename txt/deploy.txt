@@ -1,0 +1,18 @@
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+unit(fred1, testunit1)    (1,0)
+
+
