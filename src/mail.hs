@@ -97,8 +97,4 @@ getMail = do
                 Single txt -> do
                   return $ Just (InMail  ( unpack $ fromStrict (paramValue fromParam)) (unpack $ fromStrict (paramValue subjParam))   (unpack $ fromStrict txt))
 
--- main = do
---   getMail
-
- -- postMail "mapmoves@gmail.com" "testSubj3" "testMessage"
 
