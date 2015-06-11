@@ -36,7 +36,9 @@ data Player = Player { name  :: String,
                        email :: String } deriving (Show)
 type GameId = String
 data Game = Game Title GameId [Player] deriving (Show)
-
+ 
+-- email subject has a guid and a turn number - anything else is irrelevan
+data Subject = Subject { id :: String, turnNum :: String } deriving (Show)
 
 pathsCross :: Path -> Path -> Path
 pathsCross p1 p2 = [ l1 | l1 <- p1, _ <- p2, p1 == p2]
@@ -75,6 +77,27 @@ removeHeader str hdr = hdxs
         (_:xs) = T.splitOn (T.pack (headerToString hdr ))  (T.pack str)
         hdxs = T.unpack $ head xs
 
+-- de305d54-75b4-431b-adb2-eb6b9e546014
+
+
+subjectParser :: Parser Subject
+subjectParser = do
+    spaces
+    a <- (count 8 ) hexDigit
+    char '-'
+    b <- (count 4 ) hexDigit
+    char '-'
+    c <- (count 4 ) hexDigit
+    char '-'
+    d <- (count 4) hexDigit
+    char '-'
+    e <- (count 12) hexDigit
+    char ' '
+    string "Turn"
+    char ' '
+    t <- many1 digit
+    many anyChar
+    return $ Subject (a ++ "-" ++ b ++ "-" ++ c ++ "-" ++ d ++ "-" ++ e) t
 
 headerParser :: Parser Header
 headerParser = do
@@ -222,6 +245,15 @@ testGameParser = do
         Left msg ->  show msg
         Right  v ->  show  v
 
+
+testSubjectParser :: IO (String)
+testSubjectParser = do
+    let sub = "de305d54-75b4-431b-adb2-eb6b9e546014 Turn 1199"
+    let  parsedSubj = parse subjectParser "Parsing sub" sub
+    return $ case parsedSubj of
+        Left msg ->  show msg
+        Right  v ->  show  v
+
 testPlayersParser :: IO (String)
 testPlayersParser = do
     players <- readFile "players.txt"
@@ -229,3 +261,11 @@ testPlayersParser = do
     return $ case parsedPlayers of
         Left msg ->  show msg
         Right  v ->  show v
+        
+main = do
+    testSubjectParser
+
+
+
+
+
