@@ -262,8 +262,8 @@ testPlayersParser = do
         Left msg ->  show msg
         Right  v ->  show v
         
-main = do
-    testSubjectParser
+-- main = do
+--     testSubjectParser
 
 
 

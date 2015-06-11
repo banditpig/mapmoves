@@ -40,8 +40,13 @@ createGame game mail = do
 --   maybe create folder in file sys for this game?
 --   might skip deployment to start with and go straight in with moves
 
-
-handleMoves = undefined
+handleMoves :: Moves -> InMail -> IO ()
+handleMoves moves mail = do
+  let parseSub  = parse subjectParser "Parsing subj" (mailSubj mail)
+  case parseSub of
+    Left msg -> handleError msg mail 
+    Right subj    -> do
+      print subj
 
 -- persist moves to folder for this game for this turn
 -- are there two persisted moves for this turn?
@@ -57,19 +62,19 @@ handleHeader h mail cleanBody = do
         GameHdr    -> do
                        let parsedGame = parse gameParser "Parsing game" ( map toLower  strippedOfHeader)
                        case parsedGame of
-                          Left  msg  -> handleError  msg mail h strippedOfHeader
+                          Left  msg  -> handleError  msg mail -- h strippedOfHeader
                           Right game -> createGame game mail -- print game -- 
 
         DeployHdr  -> do 
                        let  parsedDeployment = parse deployParser "Parsing deployment" ( map toLower strippedOfHeader)
                        case parsedDeployment of
-                          Left  msg  -> handleError  msg mail  h strippedOfHeader
+                          Left  msg  -> handleError  msg mail  -- h strippedOfHeader
                           Right dep  -> print dep -- 
         MoveHdr    -> do 
                        let  parsedMvs = parse movesParser "Parsing Moves" ( map toLower strippedOfHeader)
                        case parsedMvs of
-                          Left  msg  -> handleError  msg mail h strippedOfHeader
-                          Right mvs  -> print mvs -- handleMoves mvs  mail 
+                          Left  msg  -> handleError  msg mail -- bh strippedOfHeader
+                          Right mvs  -> handleMoves mvs mail 
 
         RemoveHdr  -> do 
                        print h
@@ -91,11 +96,10 @@ splitToEndString :: String -> String
 splitToEndString str = T.unpack $ head $ T.splitOn (T.pack "end")  (T.pack str)
 
 
-handleError errMsg  mail hdr cleanBody = do
+handleError errMsg  mail = do
     putStrLn "Bugger..."
     print errMsg
-    -- print mail
-    putStrLn cleanBody
+    print mail
 
 --gameLoop :: InMail
 gameLoop inMail = do
@@ -108,7 +112,7 @@ gameLoop inMail = do
             let hdr = parse headerParser "Parsing Header" ( cleanBody)
             print hdr
             case hdr of
-                Left  err -> handleError err aMail hdr cleanBody
+                Left  err -> handleError err aMail -- hdr cleanBody
                 Right h   -> handleHeader h aMail  cleanBody
 
         Nothing      -> print "No mail"
