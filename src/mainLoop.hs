@@ -13,6 +13,8 @@ import Text.Parsec
 import qualified Data.Text as T 
 import Control.Concurrent (threadDelay)
 import Control.Monad 
+
+import System.Directory
 -- ==============================================================================================================
 
 getUUID :: IO (String)
@@ -27,7 +29,11 @@ createGame game mail = do
 
     let Game title _ players = game
     id <- getUUID
-    mapM_ (\plyr -> postMail (email plyr) id invite)  players
+    mapM_ (\plyr -> postMail (email plyr) (id ++ " Turn 1" ) invite)  players
+    dir <- getAppUserDataDirectory "mapmoves" 
+    createDirectory $ dir ++ "/" ++ id
+    print $ dir ++ "/"  ++ id
+
     --print players
 -- email to each player
 --   subj contains id of game
@@ -115,7 +121,17 @@ main = do
   initSystem "email.cfg" appSetup
   postMail "mapmoves@gmail.com"  "test" "testing"
   getMail
+
+  getMail
   forever $  do
     m <- getMail
     gameLoop m
     threadDelay 1000000
+
+
+
+
+
+
+
+
