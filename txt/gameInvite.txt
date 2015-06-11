@@ -2,12 +2,58 @@ You have been invited to a 'hidden moves' game session.
 
 Please do not change the subject in this email. It is updated after each turn and is needed to keep track of turns.
 
+The way it works is that each player sends an email with their moves. When both players have replied with their 
+moves for the current turn the system determines if any moves end in the same location.
 
-deploy
-  insert details here
-end
+A move is written as
+(1,1) -> (2,2);
+
+this means whatever is in location 1,1 moves to location 2,2
+
+The (, ), -> , and ; are important but spaces can occur wherever convenient.
+eg (1,2) -> (2,2)  is the same as  (1, 1 )  ->  (  2, 2 );
+
+The email must have the list of moves contained between the words 'move' and 'end' (without the enclosing '').
+
+eg
+
 
 move
-  insert details here
+
+(1,1)->  (2,1);
+(2,1) ->  (3,1);
+(11,3) -> (2,1);
+(1,1)->  (2,1);
+(2,1) ->  (27,1);
+
 end
+
+Is valid and anything before 'move' and after 'end' is ignored.
+Please be sure to write 'move' and not 'Move' or 'mOVe'.  All lower case please.
+
+On the first turn you forces have not been deployed so the firs location will be (0,0) - the location (0,0) is 'special'
+in that it is not part of the map. 
+
+An example of a first move is
+
+
+
+move
+ (0,0) -> (1,2);
+ (0,0) -> (2,2);
+
+end
+
+and the next turn could be 
+
+move
+  (1,2) -> (4,4);
+  (2,2) -> (3,2);
+
+end
+
+Notice that the end points of the first turn are the start points of the second turn.
+
+If at any point you wish to quit playing then just send the turn email with just the word 'quit' in the body.
+
 
