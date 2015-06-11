@@ -1,3 +1,5 @@
+Hello,
+
 You have been invited to a 'hidden moves' game session.
 
 Please do not change the subject in this email. It is updated after each turn and is needed to keep track of turns.
@@ -55,5 +57,7 @@ end
 Notice that the end points of the first turn are the start points of the second turn.
 
 If at any point you wish to quit playing then just send the turn email with just the word 'quit' in the body.
+
+
 
 
