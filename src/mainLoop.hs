@@ -17,11 +17,6 @@ import Control.Monad
 
 import System.Directory
 -- ==============================================================================================================
-extractAddr :: String -> String
---  could have format "Mike Houghton <mike_k_houghton@yahoo.co.uk>"
-extractAddr st = name ++ right where
-  (left, right)  = (takeWhile (\c -> c /= '@') st, takeWhile (\c -> c /= '>') (dropWhile (\c -> c /= '@' ) st)   )
-  name = reverse $ takeWhile (\c -> c /= ' ' &&  c /= '<') (reverse left)
 
 
 getUUID :: IO (String)
@@ -54,7 +49,7 @@ handleMoves moves mail = do
     Left msg -> handleError msg mail 
     Right subj    -> do
       -- from could have format "Mike Houghton <mike_k_houghton@yahoo.co.uk>"
-      let to = extractAddr $ mailFrom mail
+      let to =  mailFrom mail
       let sub = (turnId subj ++ " Turn " ++ show (turnNum subj  + 1))
       let ms = " OK! Received."
       print to
@@ -112,9 +107,12 @@ splitToEndString str = T.unpack $ head $ T.splitOn (T.pack "end")  (T.pack str)
 
 
 handleError errMsg  mail = do
-    putStrLn "Bugger..."
+    putStrLn "Error..."
+    let to =  mailFrom mail
+    let sub = "Incorrect map moves email..."
+    postMail to sub (show errMsg)
     print errMsg
-    print mail
+   
 
 --gameLoop :: InMail
 gameLoop inMail = do
