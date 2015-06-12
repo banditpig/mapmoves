@@ -38,7 +38,7 @@ type GameId = String
 data Game = Game Title GameId [Player] deriving (Show)
  
 -- email subject has a guid and a turn number - anything else is irrelevan
-data Subject = Subject { id :: String, turnNum :: String } deriving (Show)
+data Subject = Subject { turnId :: String, turnNum :: Int } deriving (Show)
 
 pathsCross :: Path -> Path -> Path
 pathsCross p1 p2 = [ l1 | l1 <- p1, _ <- p2, p1 == p2]
@@ -82,6 +82,7 @@ removeHeader str hdr = hdxs
 
 subjectParser :: Parser Subject
 subjectParser = do
+    many $ string "Re: "
     spaces
     a <- (count 8 ) hexDigit
     char '-'
@@ -89,7 +90,7 @@ subjectParser = do
     char '-'
     c <- (count 4 ) hexDigit
     char '-'
-    d <- (count 4) hexDigit
+    d <- (count 4 ) hexDigit
     char '-'
     e <- (count 12) hexDigit
     char ' '
@@ -97,7 +98,7 @@ subjectParser = do
     char ' '
     t <- many1 digit
     many anyChar
-    return $ Subject (a ++ "-" ++ b ++ "-" ++ c ++ "-" ++ d ++ "-" ++ e) t
+    return $ Subject (a ++ "-" ++ b ++ "-" ++ c ++ "-" ++ d ++ "-" ++ e) (read t::Int)
 
 headerParser :: Parser Header
 headerParser = do
@@ -261,7 +262,7 @@ testPlayersParser = do
     return $ case parsedPlayers of
         Left msg ->  show msg
         Right  v ->  show v
-        
+
 -- main = do
 --     testSubjectParser
 
