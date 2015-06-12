@@ -46,7 +46,15 @@ handleMoves moves mail = do
   case parseSub of
     Left msg -> handleError msg mail 
     Right subj    -> do
-      print subj
+      -- from could have format "Mike Houghton <mike_k_houghton@yahoo.co.uk>"
+      let to = mailFrom mail
+      let sub = (turnId subj ++ " Turn " ++ show (turnNum subj  + 1))
+      let ms = " OK! Received."
+      print to
+      print sub
+      print ms
+      postMail to sub ms
+
 
 -- persist moves to folder for this game for this turn
 -- are there two persisted moves for this turn?
@@ -124,8 +132,6 @@ main = do
   let appSetup = [( "smtpServer", smtpServer), ("username", username), ("password", password), ("imapServer", imapServer)]::AppValues
   initSystem "email.cfg" appSetup
   postMail "mapmoves@gmail.com"  "test" "testing"
-  getMail
-
   getMail
   forever $  do
     m <- getMail
