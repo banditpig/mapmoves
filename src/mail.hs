@@ -44,6 +44,12 @@ imapServer = unsafePerformIO $ newIORef ""
 clean :: String -> String
 clean str = U.replace "\194\160" "\r\n" str
 
+extractAddr :: String -> String
+--  could have format "Mike Houghton <mike_k_houghton@yahoo.co.uk>"
+extractAddr st = name ++ right where
+  (left, right)  = (Prelude.takeWhile (\c -> c /= '@') st, Prelude.takeWhile (\c -> c /= '>') (Prelude.dropWhile (\c -> c /= '@' ) st)   )
+  name = Prelude.reverse $ Prelude.takeWhile (\c -> c /= ' ' &&  c /= '<') (Prelude.reverse left)
+
 postMail :: String -> String -> String -> IO ()
 postMail to subj message = do
   smtpServer' <- (asIOString smtpServer)
@@ -55,7 +61,7 @@ postMail to subj message = do
   print authSucceed
 
   if authSucceed
-      then sendPlainTextMail to username' subj (fromString message) c 
+      then sendPlainTextMail (extractAddr to) username' subj (fromString message) c 
       else print "Authentication error."
   
 
