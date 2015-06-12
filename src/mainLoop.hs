@@ -140,10 +140,10 @@ main = do
   initSystem "email.cfg" appSetup
   postMail "mapmoves@gmail.com"  "test" "testing"
   getMail
-  -- forever $  do
-  --   m <- getMail
-  --   gameLoop m
-  --   threadDelay 1000000
+  forever $  do
+    m <- getMail
+    gameLoop m
+    threadDelay 1000000
 
 
 
