@@ -10,12 +10,20 @@ import Data.UUID.V1
 import Data.UUID
 import Data.Maybe
 import Text.Parsec
+import Text.Email.Parser
 import qualified Data.Text as T 
 import Control.Concurrent (threadDelay)
 import Control.Monad 
 
 import System.Directory
 -- ==============================================================================================================
+extractAddr :: String -> String
+--  could have format "Mike Houghton <mike_k_houghton@yahoo.co.uk>"
+extractAddr st = name ++ right where
+  (left, right)  = (takeWhile (\c -> c /= '@') st, takeWhile (\c -> c /= '>') (dropWhile (\c -> c /= '@' ) st)   )
+  -- putStrLn left
+  name = reverse $ takeWhile (\c -> c /= ' ' &&  c /= '<') (reverse left)
+
 
 getUUID :: IO (String)
 getUUID = do
@@ -133,10 +141,10 @@ main = do
   initSystem "email.cfg" appSetup
   postMail "mapmoves@gmail.com"  "test" "testing"
   getMail
-  forever $  do
-    m <- getMail
-    gameLoop m
-    threadDelay 1000000
+  -- forever $  do
+  --   m <- getMail
+  --   gameLoop m
+  --   threadDelay 1000000
 
 
 
