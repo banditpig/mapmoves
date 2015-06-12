@@ -17,7 +17,7 @@ import Network.HaskellNet.IMAP.SSL
 import Network.HaskellNet.SMTP.SSL as SMTP
 import Network.HaskellNet.Auth (AuthType(LOGIN))
 import Data.String
-
+import Data.String.Utils as U
 
 import System.IO.Unsafe
 import Data.IORef
@@ -40,8 +40,9 @@ password = unsafePerformIO $ newIORef ""
 imapServer :: IORef String
 imapServer = unsafePerformIO $ newIORef ""
 
-
-
+-- NO-BREAK SPACE \194\160
+clean :: String -> String
+clean str = U.replace "\194\160" "\r\n" str
 
 postMail :: String -> String -> String -> IO ()
 postMail to subj message = do
@@ -57,7 +58,6 @@ postMail to subj message = do
       then sendPlainTextMail to username' subj (fromString message) c 
       else print "Authentication error."
   
-
 
 getMail :: IO  (Maybe InMail)
 getMail = do
@@ -82,19 +82,23 @@ getMail = do
               logout con
 
               let mval = parseMIMEMessage (decodeUtf8 msg)
-              
-              let params = mime_val_headers mval
-              let subjParam = s where s = head [ p | p <- params, (paramName p) == "subject"]
-              let fromParam = f where f = head [ p | p <- params, (paramName p) == "from"] 
+                  params = mime_val_headers mval
+                  subjParam = s where s = head [ p | p <- params, (paramName p) == "subject"]
+                  fromParam = f where f = head [ p | p <- params, (paramName p) == "from"]
+                  from = unpack $ fromStrict (paramValue fromParam)
+                  subj = unpack $ fromStrict (paramValue subjParam)
+                  txtBody = mime_val_content mval
 
-              let txtBody = mime_val_content mval
               case txtBody of
                                  
                 Multi (v:vs) -> do
-                  let Single txt = mime_val_content  v -- tVals
-                  return $ Just (InMail  ( unpack $ fromStrict (paramValue fromParam)) (unpack $ fromStrict (paramValue subjParam))   (unpack $ fromStrict txt))
+                  let Single txt = mime_val_content  v
+                      body = clean $ unpack $ fromStrict txt
+
+                  return $ Just (InMail  from subj body)
 
                 Single txt -> do
-                  return $ Just (InMail  ( unpack $ fromStrict (paramValue fromParam)) (unpack $ fromStrict (paramValue subjParam))   (unpack $ fromStrict txt))
+                  let  body = clean $ unpack $ fromStrict txt
+                  return $ Just (InMail  from subj body)
 
 
