@@ -18,12 +18,20 @@ import Control.Monad
 import System.Directory
 -- ==============================================================================================================
 
+monadicLength :: IO[a] -> IO(Int)
+monadicLength = fmap length
+
+getFoldersInPath :: FilePath -> IO[FilePath]
+getFoldersInPath path = do
+  c <- getDirectoryContents path
+  -- getDirectoryContents will include '.' and '..'
+  filterM doesDirectoryExist [path | path <- c, path /="." && path /= ".."]
+
 
 getUUID :: IO (String)
 getUUID = do
   a <- nextUUID
   return $ toString $ fromJust a
-
 
 createGame :: Game -> InMail -> IO ()
 createGame game mail = do
@@ -48,13 +56,13 @@ handleMoves moves mail = do
   let parseSub  = parse subjectParser "Parsing subj" (mailSubj mail)
   case parseSub of
     Left msg -> handleError msg mail 
-    Right subj    -> do
+    Right subj -> do
 
       -- from could have format "Mike Houghton <mike_k_houghton@yahoo.co.uk>"
       let to =  mailFrom mail
-      -- let sub = (gameId subj ++ " Turn " ++ show (turnNum subj  + 1))
-      let sub = (gameId subj ++ " Turn " ++ show (turnNum subj))
-      let ms = " OK! Received. "
+      --  sub = (gameId subj ++ " Turn " ++ show (turnNum subj  + 1))
+          sub = gameId subj ++ " Turn " ++ show (turnNum subj)
+          ms = " OK! Received. "
 
       -- saveMoves in dir ++ "/" ++ id ++ "/" ++  turnNum subj with further subfolder name of extractAddr 'to' 
       -- does this folder now have two entries ??
@@ -146,10 +154,10 @@ main = do
   initSystem "email.cfg" appSetup
   postMail "mapmoves@gmail.com"  "test" "testing"
   getMail
-  forever $  do
-    m <- getMail
-    gameLoop m
-    threadDelay 1000000
+  -- forever $  do
+  --   m <- getMail
+  --   gameLoop m
+  --   threadDelay 1000000
 
 
 
