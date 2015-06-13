@@ -38,7 +38,7 @@ type GameId = String
 data Game = Game Title GameId [Player] deriving (Show)
  
 -- email subject has a guid and a turn number - anything else is irrelevan
-data Subject = Subject { turnId :: String, turnNum :: Int } deriving (Show)
+data Subject = Subject { gameId :: String, turnNum :: Int } deriving (Show)
 
 pathsCross :: Path -> Path -> Path
 pathsCross p1 p2 = [ l1 | l1 <- p1, _ <- p2, p1 == p2]
