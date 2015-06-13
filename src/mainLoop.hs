@@ -32,9 +32,10 @@ createGame game mail = do
     let Game title _ players = game
     id <- getUUID
     mapM_ (\plyr -> postMail (email plyr) (id ++ " Turn 1" ) invite)  players
-    dir <- getAppUserDataDirectory "mapmoves" 
-    createDirectory $ dir ++ "/" ++ id
-    print $ dir ++ "/"  ++ id
+    dir <- getAppUserDataDirectory "mapmoves"
+    -- make folder for turn 1  inside a unique folder for this game
+    createDirectory $ dir ++ "/" ++ id ++ "/" ++ "1"
+    print $ dir ++ "/" ++ id ++ "/" ++ "1"
 
     --print players
 -- email to each player
@@ -48,10 +49,17 @@ handleMoves moves mail = do
   case parseSub of
     Left msg -> handleError msg mail 
     Right subj    -> do
+
       -- from could have format "Mike Houghton <mike_k_houghton@yahoo.co.uk>"
       let to =  mailFrom mail
-      let sub = (turnId subj ++ " Turn " ++ show (turnNum subj  + 1))
-      let ms = " OK! Received."
+      -- let sub = (gameId subj ++ " Turn " ++ show (turnNum subj  + 1))
+      let sub = (gameId subj ++ " Turn " ++ show (turnNum subj))
+      let ms = " OK! Received. "
+
+      -- saveMoves in dir ++ "/" ++ id ++ "/" ++  turnNum subj with further subfolder name of extractAddr 'to' 
+      -- does this folder now have two entries ??
+      -- no - then just send the " OK! Received. " email
+      -- yes - then load up both and do a path match...
       print to
       print sub
       print ms
