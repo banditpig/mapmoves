@@ -16,9 +16,9 @@ import qualified Data.Text as T
 
 
 -- just an x,y 
-data Location = Location Int Int deriving (Show, Eq)
+data Location = Location Int Int deriving (Show, Read, Eq)
 -- from and to
-data Move = Move { from :: Location, to :: Location} deriving (Show)
+data Move = Move { from :: Location, to :: Location} deriving (Show, Read)
 -- data Moves = Moves [Move] deriving (Show)
 type Moves = [Move]
 -- a series of locations
