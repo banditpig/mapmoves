@@ -14,9 +14,23 @@ import Text.Email.Parser
 import qualified Data.Text as T 
 import Control.Concurrent (threadDelay)
 import Control.Monad 
+import System.IO
 
 import System.Directory
 -- ==============================================================================================================
+saveMoves::FilePath -> Moves -> IO()
+saveMoves path moves = do
+  writeFile path (show moves)
+
+
+
+loadMoves::FilePath -> IO(Moves)
+loadMoves path = do
+  withFile path ReadMode (\h -> do
+    contents <- hGetContents h
+    let moves = (read contents)::Moves
+    return $ moves
+    )
 
 monadicLength :: IO[a] -> IO(Int)
 monadicLength = fmap length
@@ -59,10 +73,17 @@ handleMoves moves mail = do
     Right subj -> do
 
       -- from could have format "Mike Houghton <mike_k_houghton@yahoo.co.uk>"
+      userDir <- getAppUserDataDirectory "mapmoves"
       let to =  mailFrom mail
+          id = gameId subj
+          
       --  sub = (gameId subj ++ " Turn " ++ show (turnNum subj  + 1))
           sub = gameId subj ++ " Turn " ++ show (turnNum subj)
+          
+          folderName =  userDir ++ "/" ++ id ++ "/"
           ms = " OK! Received. "
+          count = monadicLength $ getFoldersInPath folderName
+      
 
       -- saveMoves in dir ++ "/" ++ id ++ "/" ++  turnNum subj with further subfolder name of extractAddr 'to' 
       -- does this folder now have two entries ??
