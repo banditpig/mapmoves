@@ -35,11 +35,11 @@ loadMoves path = do
 monadicLength :: IO[a] -> IO(Int)
 monadicLength = fmap length
 
-getFoldersInPath :: FilePath -> IO[FilePath]
-getFoldersInPath path = do
+getFilesInPath :: FilePath -> IO[FilePath]
+getFilesInPath path = do
   c <- getDirectoryContents path
   -- getDirectoryContents will include '.' and '..'
-  filterM doesDirectoryExist [path | path <- c, path /="." && path /= ".."]
+  filterM doesFileExist [path | path <- c, path /="." && path /= ".."]
 
 
 getUUID :: IO (String)
@@ -56,7 +56,8 @@ createGame game mail = do
     mapM_ (\plyr -> postMail (email plyr) (id ++ " Turn 1" ) invite)  players
     dir <- getAppUserDataDirectory "mapmoves"
     -- make folder for turn 1  inside a unique folder for this game
-    createDirectory $ dir ++ "/" ++ id ++ "/" ++ "1"
+    createDirectoryIfMissing True $ dir ++ "/" ++ id ++ "/" ++ "1"
+    print "createdDirectory"
     print $ dir ++ "/" ++ id ++ "/" ++ "1"
 
     --print players
@@ -72,7 +73,7 @@ handleMoves moves mail = do
     Left msg -> handleError msg mail 
     Right subj -> do
 
-      -- from could have format "Mike Houghton <mike_k_houghton@yahoo.co.uk>"
+     
       userDir <- getAppUserDataDirectory "mapmoves"
       let to =  mailFrom mail
           id = gameId subj
@@ -80,18 +81,21 @@ handleMoves moves mail = do
       --  sub = (gameId subj ++ " Turn " ++ show (turnNum subj  + 1))
           sub = gameId subj ++ " Turn " ++ show (turnNum subj)
           
-          folderName =  userDir ++ "/" ++ id ++ "/"
+           -- to could have format "Mike Houghton <mike_k_houghton@yahoo.co.uk>"
+          folderName =  userDir ++ "/" ++ id ++ "/" ++ show (turnNum subj) ++ "/" ++ (extractAddr to)
           ms = " OK! Received. "
-          count = monadicLength $ getFoldersInPath folderName
-      
+          count = monadicLength $ getFilesInPath (userDir ++ "/" ++ id ++ "/" ++ show (turnNum subj) ++ "/")
+          
 
       -- saveMoves in dir ++ "/" ++ id ++ "/" ++  turnNum subj with further subfolder name of extractAddr 'to' 
       -- does this folder now have two entries ??
       -- no - then just send the " OK! Received. " email
       -- yes - then load up both and do a path match...
-      print to
+      saveMoves folderName moves
       print sub
       print ms
+      count' <- count
+      print count'
       postMail to sub ms
 
 
@@ -175,10 +179,10 @@ main = do
   initSystem "email.cfg" appSetup
   postMail "mapmoves@gmail.com"  "test" "testing"
   getMail
-  -- forever $  do
-  --   m <- getMail
-  --   gameLoop m
-  --   threadDelay 1000000
+  forever $  do
+    m <- getMail
+    gameLoop m
+    threadDelay 1000000
 
 
 

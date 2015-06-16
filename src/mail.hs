@@ -21,7 +21,8 @@ import Data.String.Utils as U
 
 import System.IO.Unsafe
 import Data.IORef
-import Config
+import AppConfig
+--import Config
 
 data InMail = InMail {mailFrom :: String, mailSubj :: String, mailBody :: String} deriving(Show)
 data MailConfig = MailConfig {smtp :: String, imap :: String, uname :: String, pwd :: String} deriving(Show)
