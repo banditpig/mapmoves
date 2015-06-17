@@ -23,6 +23,7 @@ saveMoves path moves = do
   writeFile path (show moves)
 
 
+	
 
 loadMoves::FilePath -> IO(Moves)
 loadMoves path = do
@@ -39,7 +40,9 @@ getFilesInPath :: FilePath -> IO[FilePath]
 getFilesInPath path = do
   c <- getDirectoryContents path
   -- getDirectoryContents will include '.' and '..'
-  filterM doesFileExist [path | path <- c, path /="." && path /= ".."]
+  print path
+  print c
+  filterM doesFileExist [ path ++ p | p <- c, p /="." && p /= ".." && p /= ".DS_Store"]
 
 
 getUUID :: IO (String)
@@ -84,26 +87,47 @@ handleMoves moves mail = do
            -- to could have format "Mike Houghton <mike_k_houghton@yahoo.co.uk>"
           folderName =  userDir ++ "/" ++ id ++ "/" ++ show (turnNum subj) ++ "/" ++ (extractAddr to)
           ms = " OK! Received. "
-          count = monadicLength $ getFilesInPath (userDir ++ "/" ++ id ++ "/" ++ show (turnNum subj) ++ "/")
           
 
-      -- saveMoves in dir ++ "/" ++ id ++ "/" ++  turnNum subj with further subfolder name of extractAddr 'to' 
-      -- does this folder now have two entries ??
-      -- no - then just send the " OK! Received. " email
+     
+      
       -- yes - then load up both and do a path match...
       saveMoves folderName moves
-      print sub
-      print ms
+      let rootF = userDir ++ "/" ++ id ++ "/" ++ show (turnNum subj) ++ "/"
+      let fInPath = getFilesInPath rootF
+
+      let count = monadicLength $ fInPath
+
       count' <- count
-      print count'
-      postMail to sub ms
+      case count' of
+      	1 -> do
+      		postMail to sub ms
+        2 -> do
+        	fPath <- fInPath 
+        	let mvs = [loadMoves p | p <- fPath]
+        	let first = head fPath
+        	let (m1, m2) = (loadMoves $  (fPath !! 0), loadMoves $ (fPath !! 1))
+        	print fPath
+        	m1' <- m1
+        	m2' <- m2
+        	print m1'
+        	print m2'
+        	print "done"
+        	-- first <- fPath  !! 0
+        	-- second <- fPath !! 1
+        	-- let fInPath' = first + second
+        _ -> do print "error"
+        		
+        		
+        	-- let (m1, m2 ) = ( loadMoves first, loadMoves second)
+        	
+      -- if count' == 2 then load both files and comapre moves
+      -- no - then just send the " OK! Received. " email
+      
+      
 
 
--- persist moves to folder for this game for this turn
--- are there two persisted moves for this turn?
---  no - then wait for  both moves to be received for this turn
---  yes - load up both moves for this turn
---
+
 -- ==============================================================================================================
 
 handleHeader h mail cleanBody = do
