@@ -20,7 +20,7 @@ data Location = Location Int Int deriving (Show, Read, Eq)
 -- from and to
 data Move = Move { from :: Location, to :: Location} deriving (Show, Read)
 -- data Moves = Moves [Move] deriving (Show)
-type Moves = [Move]
+type Moves = [Move] 
 -- a series of locations
 type Path = [Location] 
 -- a name at least and a location
@@ -128,7 +128,7 @@ moveParser = do
     spaces
     return $ Move from to
 
-movesParser :: Parser [Move]
+movesParser :: Parser Moves
 movesParser = do
         move <- moveParser
         moves <- many  moveParser
