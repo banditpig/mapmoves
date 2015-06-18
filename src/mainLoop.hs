@@ -100,9 +100,9 @@ handleMoves moves mail = do
       let rootF = userDir ++ "/" ++ id ++ "/" ++ show (turnNum subj) ++ "/"
       let fInPath = getFilesInPath rootF
 
-      let count = monadicLength $ fInPath
+     
 
-      count' <- count
+      count' <- monadicLength $ fInPath
       case count' of
       	1 -> do
       		postMail to sub ms
@@ -116,7 +116,8 @@ handleMoves moves mail = do
         	let pathsX = pathsCross  (getAllTo m1' ) (getAllTo m2' )
         	print "/n"
         	print pathsX
-        	-- if pathsX not empty then send match details other wise ask for next turn.
+        	-- if pathsX not empty then send match details and also  wise ask for next turn. Otherwise send email saysimg
+        	-- nocontact and ask for next turn,
         _ -> do print "error"
         		
 
