@@ -108,27 +108,17 @@ handleMoves moves mail = do
       		postMail to sub ms
         2 -> do
         	fPath <- fInPath 
-        	let mvs = [loadMoves p | p <- fPath]
-        	let first = head fPath
         	let (m1, m2) = (loadMoves $  (fPath !! 0), loadMoves $ (fPath !! 1))
         	print fPath
         	m1' <- m1
         	m2' <- m2
-        	print m1'
-        	print m2'
-        	print "done"
-        	-- first <- fPath  !! 0
-        	-- second <- fPath !! 1
-        	-- let fInPath' = first + second
+        	
+        	let pathsX = pathsCross  (getAllTo m1' ) (getAllTo m2' )
+        	print "/n"
+        	print pathsX
+        	-- if pathsX not empty then send match details other wise ask for next turn.
         _ -> do print "error"
         		
-        		
-        	-- let (m1, m2 ) = ( loadMoves first, loadMoves second)
-        	
-      -- if count' == 2 then load both files and comapre moves
-      -- no - then just send the " OK! Received. " email
-      
-      
 
 
 
