@@ -1,7 +1,9 @@
 
 {-# LANGUAGE OverloadedStrings #-}
-{-# OPTIONS -Wall -fwarn-tabs -fno-warn-type-defaults -fno-warn-unused-do-bind #-}
+{-# LANGUAGE BangPatterns #-} -- force eval of a list
 
+{-# OPTIONS -Wall -fwarn-tabs -fno-warn-type-defaults -fno-warn-unused-do-bind #-}
+module MainLoop where
 import Parser
 import Mail
 import Config
@@ -23,13 +25,15 @@ saveMoves path moves = do
   writeFile path (show moves)
 
 
-	
+  
 
 loadMoves::FilePath -> IO(Moves)
 loadMoves path = do
   withFile path ReadMode (\h -> do
-    contents <- hGetContents h
-    let moves = (read contents)::Moves
+    -- lazy evalso force it (I think thats it!! with ! it won't work, or will if do print contents)
+    !contents <- hGetContents h
+
+    let moves = read contents::Moves
     return $ moves
     )
 
@@ -203,10 +207,10 @@ main = do
   initSystem "email.cfg" appSetup
   postMail "mapmoves@gmail.com"  "test" "testing"
   getMail
-  forever $  do
-    m <- getMail
-    gameLoop m
-    threadDelay 1000000
+  -- forever $  do
+  --   m <- getMail
+  --   gameLoop m
+  --   threadDelay 1000000
 
 
 
