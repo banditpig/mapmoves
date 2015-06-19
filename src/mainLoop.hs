@@ -60,12 +60,14 @@ createGame game mail = do
 
     let Game title _ players = game
     id <- getUUID
+    -- email players
     mapM_ (\plyr -> postMail (email plyr) (id ++ " Turn 1" ) invite)  players
     dir <- getAppUserDataDirectory "mapmoves"
     -- make folder for turn 1  inside a unique folder for this game
     createDirectoryIfMissing True $ dir ++ "/" ++ id ++ "/" ++ "1"
-    print "createdDirectory"
     print $ dir ++ "/" ++ id ++ "/" ++ "1"
+    -- write game details 
+    writeFile (dir ++ "/" ++ id ++ "/game") (show game)
 
     --print players
 -- email to each player
@@ -78,9 +80,7 @@ handleMoves moves mail = do
   let parseSub  = parse subjectParser "Parsing subj" (mailSubj mail)
   case parseSub of
     Left msg -> handleError msg mail 
-    Right subj -> do
-
-     
+    Right subj -> do     
       userDir <- getAppUserDataDirectory "mapmoves"
       let to =  mailFrom mail
           id = gameId subj
@@ -91,12 +91,9 @@ handleMoves moves mail = do
            -- to could have format "Mike Houghton <mike_k_houghton@yahoo.co.uk>"
           folderName =  userDir ++ "/" ++ id ++ "/" ++ show (turnNum subj) ++ "/" ++ (extractAddr to)
           ms = " OK! Received. "
-          
-
-     
-      
-      -- yes - then load up both and do a path match...
+               
       saveMoves folderName moves
+
       let rootF = userDir ++ "/" ++ id ++ "/" ++ show (turnNum subj) ++ "/"
       let fInPath = getFilesInPath rootF
 
@@ -105,6 +102,7 @@ handleMoves moves mail = do
       count' <- monadicLength $ fInPath
       case count' of
       	1 -> do
+          -- just say ok -received your moves
       		postMail to sub ms
         2 -> do
         	fPath <- fInPath 
@@ -113,11 +111,14 @@ handleMoves moves mail = do
         	m1' <- m1
         	m2' <- m2
         	
+          -- any common points?
         	let pathsX = pathsCross  (getAllTo m1' ) (getAllTo m2' )
         	print "/n"
         	print pathsX
-        	-- if pathsX not empty then send match details and also  wise ask for next turn. Otherwise send email saysimg
-        	-- nocontact and ask for next turn,
+          
+
+        	-- if pathsX not empty then send match details and also  ask for next turn. Otherwise send email saying
+        	-- no contact and ask for next turn,
         _ -> do print "error"
         		
 
@@ -198,10 +199,10 @@ main = do
   initSystem "email.cfg" appSetup
   postMail "mapmoves@gmail.com"  "test" "testing"
   getMail
-  -- forever $  do
-  --   m <- getMail
-  --   gameLoop m
-  --   threadDelay 1000000
+  forever $  do
+    m <- getMail
+    gameLoop m
+    threadDelay 1000000
 
 
 
