@@ -69,10 +69,7 @@ createGame game mail = do
     -- write game details 
     writeFile (dir ++ "/" ++ id ++ "/game") (show game)
 
-    --print players
--- email to each player
---   subj contains id of game
---   maybe create folder in file sys for this game?
+
 --   might skip deployment to start with and go straight in with moves
 
 handleMoves :: Moves -> InMail -> IO ()
