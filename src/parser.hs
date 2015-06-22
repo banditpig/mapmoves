@@ -33,9 +33,9 @@ type Deployment = [Unit]
 
 type Title  = String
 data Player = Player { name  :: String,
-                       email :: String } deriving (Show)
+                       email :: String } deriving (Show, Read)
 type GameId = String
-data Game = Game Title GameId [Player] deriving (Show)
+data Game = Game Title GameId [Player] deriving (Show, Read)
  
 -- email subject has a guid and a turn number - anything else is irrelevan
 data Subject = Subject { gameId :: String, turnNum :: Int } deriving (Show)
