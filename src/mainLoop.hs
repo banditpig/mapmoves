@@ -124,8 +124,8 @@ handleMoves moves mail = do
         	print fPath
         	m1' <- m1
         	m2' <- m2
-        	g   <- loadGame (userDir  ++ "/" ++ id ++ "/game")
-          
+        	Game t id plyrs   <- loadGame (userDir  ++ "/" ++ id ++ "/game")
+
           -- any common points?
         	let pathsX = pathsCross  (getAllTo m1' ) (getAllTo m2' )
         	print "/n"
