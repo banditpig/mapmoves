@@ -11,6 +11,7 @@ import Data.Char (toLower)
 import Data.UUID.V1
 import Data.UUID
 import Data.Maybe
+
 import Text.Parsec
 import Text.Email.Parser
 import qualified Data.Text as T 
@@ -21,7 +22,8 @@ import System.IO
 import System.Directory
 -- ==============================================================================================================
 --sendEmails :: [Player] -> String -> String -> IO()
-sendEmails plyrs subNext contactBody = undefined
+sendEmails plyrs sub bdy = do
+	mapM_ (\p -> postMail (email p) sub bdy)  plyrs
 
 
 saveGame :: FilePath -> Game -> IO()
@@ -103,7 +105,7 @@ handleMoves moves mail = do
       --  sub = (gameId subj ++ " Turn " ++ show (turnNum subj  + 1))
           sub = id ++ " Turn " ++ show (turnNum subj)
           
-           -- to could have format "Mike Houghton <mike_k_houghton@yahoo.co.uk>"
+           -- 'to' could have format "Mike Houghton <mike_k_houghton@yahoo.co.uk>"
           folderName =  userDir ++ "/" ++ id ++ "/" ++ show (turnNum subj) ++ "/" ++ to
           ms = " OK! Moves received. Please be patient.  I'm still waiting for your opponents moves"
                
@@ -123,14 +125,14 @@ handleMoves moves mail = do
 
         	fPath <- fInPath 
         	let (m1, m2) = (loadMoves $  (fPath !! 0), loadMoves $ (fPath !! 1))
-        	print fPath
         	m1' <- m1
         	m2' <- m2
         	Game t id players   <- loadGame (userDir  ++ "/" ++ id ++ "/game")
-
+        	createDirectoryIfMissing True $ userDir ++ "/" ++ id ++ "/" ++ show ((turnNum subj)  + 1)
           -- any common points?
         	let pathsX = pathsCross  (getAllTo m1' ) (getAllTo m2' )
         	    subNext = (gameId subj ++ " Turn " ++ show (turnNum subj  + 1))
+-- make the folder for the next turn
         	print pathsX
         	case  (length pathsX) of
         		0 -> do
