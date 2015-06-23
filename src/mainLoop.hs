@@ -20,6 +20,8 @@ import System.IO
 
 import System.Directory
 -- ==============================================================================================================
+--sendEmails :: [Player] -> String -> String -> IO()
+sendEmails plyrs subNext contactBody = undefined
 
 
 saveGame :: FilePath -> Game -> IO()
@@ -124,16 +126,20 @@ handleMoves moves mail = do
         	print fPath
         	m1' <- m1
         	m2' <- m2
-        	Game t id plyrs   <- loadGame (userDir  ++ "/" ++ id ++ "/game")
+        	Game t id players   <- loadGame (userDir  ++ "/" ++ id ++ "/game")
 
           -- any common points?
         	let pathsX = pathsCross  (getAllTo m1' ) (getAllTo m2' )
-        	print "/n"
+        	    subNext = (gameId subj ++ " Turn " ++ show (turnNum subj  + 1))
         	print pathsX
-          
+        	case  (length pathsX) of
+        		0 -> do
+        			let noContactBody  = "No contact. Please send yor moves for the next turn."
+        			sendEmails players subNext noContactBody
+        		_ -> do
+        			let contactBody = "There is contact in these locations..." ++ (show pathsX)
+        			sendEmails players subNext contactBody
 
-        	-- if pathsX not empty then send match details and also  ask for next turn. Otherwise send email saying
-        	-- no contact and ask for next turn,
         _ -> do print "error"
         		
 
@@ -214,10 +220,10 @@ main = do
   initSystem "email.cfg" appSetup
   postMail "mapmoves@gmail.com"  "test" "testing"
   getMail
-  forever $  do
-    m <- getMail
-    gameLoop m
-    threadDelay 1000000
+  -- forever $  do
+  --   m <- getMail
+  --   gameLoop m
+  --   threadDelay 1000000
 
 
 
