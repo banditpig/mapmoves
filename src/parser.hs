@@ -9,6 +9,7 @@ module Parser where
     -- info
     -- quit
 import Data.Char (toLower)
+import Data.List
 import Text.Parsec
 import Text.Parsec.String
 import qualified Data.Text as T 
@@ -52,7 +53,8 @@ getAllFrom moves = path where
 
 
 pathsCross :: Path -> Path -> Path
-pathsCross p1 p2 = [ l1 | l1 <- p1, _ <- p2, p1 == p2]
+pathsCross p1 p2 =  m where 
+    m = nub $ [ l1 | l1 <- p1, l1 `elem` p2]
 
 -- get the 'to' values from the Moves
 endPoints :: [Move] -> Path
