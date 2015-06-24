@@ -127,13 +127,16 @@ handleMoves moves mail = do
         	let (m1, m2) = (loadMoves $  (fPath !! 0), loadMoves $ (fPath !! 1))
         	m1' <- m1
         	m2' <- m2
-        	Game t id players   <- loadGame (userDir  ++ "/" ++ id ++ "/game")
-        	createDirectoryIfMissing True $ userDir ++ "/" ++ id ++ "/" ++ show ((turnNum subj)  + 1)
+        	Game t i players   <- loadGame (userDir  ++ "/" ++ id ++ "/game")
           -- any common points?
         	let pathsX = pathsCross  (getAllTo m1' ) (getAllTo m2' )
         	    subNext = (gameId subj ++ " Turn " ++ show (turnNum subj  + 1))
+        	    xa = (userDir ++ "/" ++ id ++ "/" ++ show ((turnNum subj) +1)  ++ "/")
+
+        	createDirectoryIfMissing True $ userDir ++ "/" ++ id ++ "/" ++ show ((turnNum subj) +1)  ++ "/"
 -- make the folder for the next turn
         	print pathsX
+        	print xa
         	case  (length pathsX) of
         		0 -> do
         			let noContactBody  = "No contact. Please send yor moves for the next turn."
@@ -222,10 +225,10 @@ main = do
   initSystem "email.cfg" appSetup
   postMail "mapmoves@gmail.com"  "test" "testing"
   getMail
-  -- forever $  do
-  --   m <- getMail
-  --   gameLoop m
-  --   threadDelay 1000000
+  forever $  do
+    m <- getMail
+    gameLoop m
+    threadDelay 1000000
 
 
 
