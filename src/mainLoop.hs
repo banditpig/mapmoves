@@ -122,12 +122,12 @@ handleMoves moves mail = do
           -- just say ok -received your moves
       		postMail to sub ms
         2 -> do
-
+-- Title GameId [Player]
         	fPath <- fInPath 
         	let (m1, m2) = (loadMoves $  (fPath !! 0), loadMoves $ (fPath !! 1))
         	m1' <- m1
         	m2' <- m2
-        	Game t i players   <- loadGame (userDir  ++ "/" ++ id ++ "/game")
+        	Game _  _ players   <- loadGame (userDir  ++ "/" ++ id ++ "/game")
           -- any common points?
         	let pathsX = pathsCross  (getAllTo m1' ) (getAllTo m2' )
         	    subNext = (gameId subj ++ " Turn " ++ show (turnNum subj  + 1))
@@ -142,7 +142,7 @@ handleMoves moves mail = do
         			let noContactBody  = "No contact. Please send yor moves for the next turn."
         			sendEmails players subNext noContactBody
         		_ -> do
-        			let contactBody = "There is contact in these locations..." ++ (show pathsX)
+        			let contactBody = "There is contact in these locations..." ++ (show pathsX) ++ " \nPlease send yor moves for the next turn."
         			sendEmails players subNext contactBody
 
         _ -> do print "error"
